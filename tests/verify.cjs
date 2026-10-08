@@ -32,6 +32,7 @@ console.log('PASS: 全4096回答・全分類同点・未回答検証');
   page.on('request', request => requests.push(request.url()));
   const url = process.env.APP_URL || pathToFileURL(path.resolve(__dirname, '../index.html')).href;
   async function layout() {
+    await page.locator('img:visible').evaluateAll(imgs => Promise.all(imgs.map(img => img.decode())));
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, '横はみ出し');
     assert.equal(await page.locator('img:visible').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0 && Math.abs(img.getBoundingClientRect().width / img.getBoundingClientRect().height - img.naturalWidth / img.naturalHeight) < .02 && img.alt.length > 0)), true, '画像読み込み・比率・代替テキスト');
   }
